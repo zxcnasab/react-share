@@ -20,7 +20,7 @@ const getBoxPositionOnScreenCenter = (width: number, height: number) => ({
 
 function windowOpen(
   url: string,
-  { height, width, ...configRest }: { height: number; width: number; [key: string]: any },
+  { height, width, ...configRest }: { height: number; width: number;[key: string]: any },
   onClose?: (dialog: Window | null) => void,
 ) {
   const config: { [key: string]: string | number } = {
@@ -35,33 +35,37 @@ function windowOpen(
     resizable: 'no',
     centerscreen: 'yes',
     chrome: 'yes',
+    target: '_blank',
     ...configRest,
   };
-
-  const shareDialog = window.open(
-    url,
-    '',
-    Object.keys(config)
-      .map(key => `${key}=${config[key]}`)
-      .join(', '),
-  );
-
-  if (onClose) {
-    const interval = window.setInterval(() => {
-      try {
-        if (shareDialog === null || shareDialog.closed) {
-          window.clearInterval(interval);
-          onClose(shareDialog);
-        }
-      } catch (e) {
-        /* eslint-disable no-console */
-        console.error(e);
-        /* eslint-enable no-console */
-      }
-    }, 1000);
+  if (configRest && configRest.opts && configRest.opts.target && configRest.opts.target === "_blank") {
+    const shareDialog = window.open(url, 'sharer' + 'target=_blank')
+    return shareDialog;
   }
-
-  return shareDialog;
+  else {
+    const shareDialog = window.open(
+      url,
+      '',
+      Object.keys(config)
+        .map(key => `${key}=${config[key]}`)
+        .join(', '),
+    );
+    if (onClose) {
+      const interval = window.setInterval(() => {
+        try {
+          if (shareDialog === null || shareDialog.closed) {
+            window.clearInterval(interval);
+            onClose(shareDialog);
+          }
+        } catch (e) {
+          /* eslint-disable no-console */
+          console.error(e);
+          /* eslint-enable no-console */
+        }
+      }, 1000);
+    }
+    return shareDialog;
+  }
 }
 
 interface CustomProps<LinkOptions> {
@@ -113,17 +117,17 @@ export default class ShareButton<LinkOptions> extends Component<Props<LinkOption
     resetButtonStyle: true,
   };
 
-  openShareDialog = (link: string) => {
+  openShareDialog = (link: string, opts: LinkOptions) => {
     const {
       onShareWindowClose,
       windowHeight = 400,
       windowPosition = 'windowCenter',
       windowWidth = 550,
     } = this.props;
-
     const windowConfig = {
       height: windowHeight,
       width: windowWidth,
+      opts,
       ...(windowPosition === 'windowCenter'
         ? getBoxPositionOnWindowCenter(windowWidth, windowHeight)
         : getBoxPositionOnScreenCenter(windowWidth, windowHeight)),
@@ -142,9 +146,7 @@ export default class ShareButton<LinkOptions> extends Component<Props<LinkOption
       openShareDialogOnClick,
       opts,
     } = this.props;
-
     const link = networkLink(url, opts);
-
     if (disabled) {
       return;
     }
@@ -160,7 +162,7 @@ export default class ShareButton<LinkOptions> extends Component<Props<LinkOption
     }
 
     if (openShareDialogOnClick) {
-      this.openShareDialog(link);
+      this.openShareDialog(link, opts);
     }
 
     if (onClick) {
@@ -201,19 +203,19 @@ export default class ShareButton<LinkOptions> extends Component<Props<LinkOption
 
     const newStyle = resetButtonStyle
       ? {
-          backgroundColor: 'transparent',
-          border: 'none',
-          padding: 0,
-          font: 'inherit',
-          color: 'inherit',
-          cursor: 'pointer',
-          ...style,
-          ...(disabled && disabledStyle),
-        }
+        backgroundColor: 'transparent',
+        border: 'none',
+        padding: 0,
+        font: 'inherit',
+        color: 'inherit',
+        cursor: 'pointer',
+        ...style,
+        ...(disabled && disabledStyle),
+      }
       : {
-          ...style,
-          ...(disabled && disabledStyle),
-        };
+        ...style,
+        ...(disabled && disabledStyle),
+      };
 
     return (
       <button

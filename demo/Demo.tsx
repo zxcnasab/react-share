@@ -64,6 +64,7 @@ class Demo extends Component {
           <FacebookShareButton
             url={shareUrl}
             quote={title}
+            target="_blank"
             className="Demo__some-network__share-button"
           >
             <FacebookIcon size={32} round />
@@ -90,6 +91,7 @@ class Demo extends Component {
           <TwitterShareButton
             url={shareUrl}
             title={title}
+            target="_blank"
             className="Demo__some-network__share-button"
           >
             <TwitterIcon size={32} round />

@@ -10,7 +10,8 @@ function twitterLink(
     via,
     hashtags = [],
     related = [],
-  }: { title?: string; via?: string; hashtags?: string[]; related?: string[] },
+    target = ""
+  }: { title?: string; via?: string; hashtags?: string[]; related?: string[], target?: string },
 ) {
   assert(url, 'twitter.url');
   assert(Array.isArray(hashtags), 'twitter.hashtags is not an array');
@@ -24,6 +25,7 @@ function twitterLink(
       via,
       hashtags: hashtags.length > 0 ? hashtags.join(',') : undefined,
       related: related.length > 0 ? related.join(',') : undefined,
+      target
     })
   );
 }
@@ -33,6 +35,7 @@ const TwitterShareButton = createShareButton<{
   via?: string;
   hashtags?: string[];
   related?: string[];
+  target?: string;
 }>(
   'twitter',
   twitterLink,
@@ -41,6 +44,7 @@ const TwitterShareButton = createShareButton<{
     title: props.title,
     via: props.via,
     related: props.related,
+    target: props.target
   }),
   {
     windowWidth: 550,
